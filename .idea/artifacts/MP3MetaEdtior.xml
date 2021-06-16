@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="MP3MetaEdtior">
+    <output-path>$PROJECT_DIR$/out/artifacts/MP3MetaEdtior</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="com.u1tramarinet.mp3metaeditor.ui.Main" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="exe" />
+        <option name="title" value="MP3MetaEditor" />
+        <option name="vendor" value="" />
+        <option name="version" value="1.0.0" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="MP3MetaEdtior.jar">
+        <element id="module-output" name="MP3MetaEdtior" />
+      </element>
+    </root>
+  </artifact>
+</component>
