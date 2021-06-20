@@ -1,57 +1,55 @@
 package com.u1tramarinet.mp3metaeditor.java.ui;
 
 import com.u1tramarinet.mp3metaeditor.java.usecase.MP3FileDto;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.SimpleObjectProperty;
 
-import java.util.Objects;
+class MP3FileDtoProperty extends SimpleObjectProperty<MP3FileDto> {
+    final ObjectProperty<String> fileNameProperty = new SimpleObjectProperty<>("");
+    final ObjectProperty<String> trackNameProperty = new SimpleObjectProperty<>("");
+    final ObjectProperty<String> artistNameProperty = new SimpleObjectProperty<>("");
+    final ObjectProperty<String> trackNumberProperty = new SimpleObjectProperty<>("");
+    final ObjectProperty<String> albumArtistNameProperty = new SimpleObjectProperty<>("");
+    final ObjectProperty<String> albumNameProperty = new SimpleObjectProperty<>("");
+    private boolean applying = false;
 
-public class MP3FileDtoProperty extends Property<MP3FileDto> {
-    public final Property<String> fileNameProperty = new Property<>();
-    public final Property<String> trackNameProperty = new Property<>();
-    public final Property<String> artistNameProperty = new Property<>();
-    public final Property<String> trackNumberProperty = new Property<>();
-    public final Property<String> albumArtistNameProperty = new Property<>();
-    public final Property<String> albumNameProperty = new Property<>();
+    MP3FileDtoProperty() {
+        super();
+        bindValues();
+    }
 
-    @Override
-    public ObjectProperty<MP3FileDto> valueProperty() {
-        return super.valueProperty();
+    MP3FileDtoProperty(MP3FileDto value) {
+        super(value);
+        applyValue(value);
+        bindValues();
     }
 
     @Override
     public void set(MP3FileDto value) {
         super.set(value);
-        if (Objects.nonNull(value)) {
-            setValues(value);
+        applyValue(value);
+    }
+
+    private void bindValues() {
+        fileNameProperty.addListener((observableValue, oldValue, newValue) -> reflectValue());
+        trackNameProperty.addListener((observableValue, oldValue, newValue) -> reflectValue());
+        artistNameProperty.addListener((observableValue, oldValue, newValue) -> reflectValue());
+        trackNumberProperty.addListener((observableValue, oldValue, newValue) -> reflectValue());
+        albumArtistNameProperty.addListener((observableValue, oldValue, newValue) -> reflectValue());
+        albumNameProperty.addListener((observableValue, oldValue, newValue) -> reflectValue());
+    }
+
+    private void applyValue(MP3FileDto value) {
+        applying = true;
+        if (null != value) {
+            setProperties(value);
         } else {
-            clearValues();
+            clearProperties();
         }
+        applying = false;
     }
 
-    @Override
-    public void setOriginal(MP3FileDto value) {
-        super.setOriginal(value);
-        if (Objects.nonNull(value)) {
-            setOriginalValues(value);
-        } else {
-            clearOriginalValues();
-        }
-    }
-
-    @Override
-    protected ObservableValue<Boolean> getValueModified() {
-        return ((BooleanBinding) super.getValueModified())
-                .or(fileNameProperty.valueModifiedProperty())
-                .or(trackNameProperty.valueModifiedProperty())
-                .or(artistNameProperty.valueModifiedProperty())
-                .or(trackNumberProperty.valueModifiedProperty())
-                .or(albumArtistNameProperty.valueModifiedProperty())
-                .or(albumNameProperty.valueModifiedProperty());
-    }
-
-    private void setValues(MP3FileDto value) {
+    private void setProperties(MP3FileDto value) {
         fileNameProperty.set(value.fileName);
         trackNameProperty.set(value.trackName);
         artistNameProperty.set(value.artistName);
@@ -60,7 +58,7 @@ public class MP3FileDtoProperty extends Property<MP3FileDto> {
         albumNameProperty.set(value.albumName);
     }
 
-    private void clearValues() {
+    private void clearProperties() {
         fileNameProperty.set(null);
         trackNameProperty.set(null);
         artistNameProperty.set(null);
@@ -69,21 +67,13 @@ public class MP3FileDtoProperty extends Property<MP3FileDto> {
         albumNameProperty.set(null);
     }
 
-    private void setOriginalValues(MP3FileDto value) {
-        fileNameProperty.setOriginal(value.fileName);
-        trackNameProperty.setOriginal(value.trackName);
-        artistNameProperty.setOriginal(value.artistName);
-        trackNumberProperty.setOriginal(value.trackNumber);
-        albumArtistNameProperty.setOriginal(value.albumArtistName);
-        albumNameProperty.setOriginal(value.albumName);
-    }
-
-    private void clearOriginalValues() {
-        fileNameProperty.setOriginal(null);
-        trackNameProperty.setOriginal(null);
-        artistNameProperty.setOriginal(null);
-        trackNumberProperty.setOriginal(null);
-        albumArtistNameProperty.setOriginal(null);
-        albumNameProperty.setOriginal(null);
+    private void reflectValue() {
+        if (applying) return;
+        get().fileName = fileNameProperty.get();
+        get().trackName = trackNameProperty.get();
+        get().artistName = artistNameProperty.get();
+        get().trackNumber = trackNumberProperty.get();
+        get().albumArtistName = albumArtistNameProperty.get();
+        get().albumName = albumNameProperty.get();
     }
 }

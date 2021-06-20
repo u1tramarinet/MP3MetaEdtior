@@ -9,9 +9,9 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class MP3FileManager {
+    private static final boolean debug = true;
     private static final MP3FileManager INSTANCE = new MP3FileManager();
     private final List<MP3File> mp3Files = new ArrayList<>();
-    private MP3File mp3File = null;
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final List<Callback<List<MP3File>>> filesCallbacks = new ArrayList<>();
     private final List<Callback<MP3File>> fileCallbacks = new ArrayList<>();
@@ -53,25 +53,7 @@ public class MP3FileManager {
         notifyOnFilesUpdateCompleted(mp3Files);
     }
 
-    public void selectMP3File(long id) {
-        if (null != mp3File && id == mp3File.id) return;
-        for (MP3File mp3f : mp3Files) {
-            if (id == mp3f.id) {
-                mp3File = mp3f;
-                notifyOnFileUpdateCompleted(mp3f);
-                return;
-            }
-        }
-    }
-
-    public void unselectMP3File() {
-        if (null == mp3File) return;
-        mp3File = null;
-        notifyOnFileUpdateCompleted(null);
-    }
-
     public void updateMP3Tag(long id, MP3Tag mp3Tag) {
-        if (null == mp3File) return;
         runOnWorkerThread(() -> updateMP3TagLocked(id, mp3Tag));
     }
 
@@ -98,14 +80,16 @@ public class MP3FileManager {
 
     private void updateMP3TagLocked(long id, MP3Tag mp3Tag) {
         boolean result = false;
+        MP3File file = null;
         for (MP3File mp3f : mp3Files) {
             if (id == mp3f.id) {
+                file = mp3f;
                 result = updateMP3TagLockedInternal(id, mp3Tag);
             }
         }
 
         if (result) {
-            notifyOnFileUpdateCompleted(mp3File);
+            notifyOnFileUpdateCompleted(file);
             notifyOnFilesUpdateCompleted(mp3Files);
         } else {
             notifyOnFileUpdateFailed(new Exception());
@@ -114,6 +98,7 @@ public class MP3FileManager {
     }
 
     private boolean updateMP3TagLockedInternal(long id, MP3Tag mp3Tag) {
+        d("updateMP3TagLockedInternal()", "id=" + id + ", tag=" + mp3Tag);
         for (int i = 0; i < mp3Files.size(); i++) {
             MP3File f = mp3Files.get(i);
             if (id == f.id) {
@@ -122,12 +107,15 @@ public class MP3FileManager {
                     if (result) {
                         f.setTag(mp3Tag);
                         mp3Files.set(i, f);
+                        d("updateMP3TagLockedInternal()", "id=" + id + ", result=true");
                         return true;
                     }
                 }
+                d("updateMP3TagLockedInternal()", "id=" + id + ", result=false");
                 return false;
             }
         }
+        d("updateMP3TagLockedInternal()", "id=" + id + ", result=false");
         return false;
     }
 
@@ -169,7 +157,9 @@ public class MP3FileManager {
     }
 
     private void notifyFilesCallback(Consumer<Callback<List<MP3File>>> command) {
+        d("notifyFilesCallback", "IN files=" + mp3Files);
         for (Callback<List<MP3File>> callback : filesCallbacks) {
+            d("notifyFilesCallback", "callback=" + callback);
             command.accept(callback);
         }
     }
@@ -182,5 +172,10 @@ public class MP3FileManager {
         public void onUpdateFailed(Exception e) {
 
         }
+    }
+
+    private void d(String method, String message) {
+        if (!debug) return;
+        System.out.printf("%s:%s %s%n", MP3FileManager.class.getSimpleName(), method, message);
     }
 }

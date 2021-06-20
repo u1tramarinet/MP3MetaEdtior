@@ -1,14 +1,37 @@
 package com.u1tramarinet.mp3metaeditor.java.usecase;
 
-import com.u1tramarinet.mp3metaeditor.java.domain.MP3File;
-import com.u1tramarinet.mp3metaeditor.java.domain.MP3FileManager;
+import java.util.concurrent.Executor;
 
-import java.util.Objects;
+public abstract class ListenUseCase<T> extends UseCase {
+    private final Executor executor;
 
-public abstract class ListenUseCase<D> extends UseCase {
-    public abstract void startToListen(Callback<D> callback);
+    public ListenUseCase() {
+        this(null);
+    }
 
-    public abstract void finishToListen();
+    public ListenUseCase(Executor executor) {
+        this.executor = executor;
+    }
+
+    public final void startToListen(Callback<T> callback) {
+        runOnExecutorIfNeeded(() -> this.startToListenLocked(callback));
+    }
+
+    protected abstract void startToListenLocked(Callback<T> callback);
+
+    public final void finishToListen() {
+        runOnExecutorIfNeeded(this::finishToListenLocked);
+    }
+
+    public abstract void finishToListenLocked();
+
+    protected void runOnExecutorIfNeeded(Runnable r) {
+        if (null != executor) {
+            executor.execute(r);
+        } else {
+            r.run();
+        }
+    }
 
     public interface Callback<D> {
         void onSuccess(D data);

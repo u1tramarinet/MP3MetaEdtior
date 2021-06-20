@@ -1,13 +1,8 @@
 package com.u1tramarinet.mp3metaeditor.java.ui;
 
-import com.u1tramarinet.mp3metaeditor.java.util.UiThreadExecutor;
-import com.u1tramarinet.mp3metaeditor.java.usecase.ListenFileUpdateUseCase;
-import com.u1tramarinet.mp3metaeditor.java.usecase.ListenFilesUpdateUseCase;
+import com.u1tramarinet.mp3metaeditor.java.usecase.CollectiveSetUseCase;
 import com.u1tramarinet.mp3metaeditor.java.usecase.MP3FileDto;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
@@ -17,8 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
-public class CollectiveSetController implements Initializable {
+public class CollectiveSetController extends ChildControllerBase {
     @FXML
     private CheckBox trackExcerptCheck;
     @FXML
@@ -65,13 +61,7 @@ public class CollectiveSetController implements Initializable {
     private HBox albumArtistCandidatesBox;
     @FXML
     private HBox albumCandidatesBox;
-    private final MP3FileDtoProperty fileProperty = new MP3FileDtoProperty();
-    private final Property<List<MP3FileDto>> filesProperty = new Property<>();
-    private final Map<String, Integer> artistCandidateList = new HashMap<>();
-    private final Map<String, Integer> albumArtistCandidateList = new HashMap<>();
-    private final Map<String, Integer> albumCandidateList = new HashMap<>();
-    private final ListenFileUpdateUseCase listenFileUpdateUseCase = new ListenFileUpdateUseCase(new UiThreadExecutor());
-    private final ListenFilesUpdateUseCase listenFilesUpdateUseCase = new ListenFilesUpdateUseCase(new UiThreadExecutor());
+    private final CollectiveSetUseCase collectiveSetUseCase = new CollectiveSetUseCase();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -81,135 +71,76 @@ public class CollectiveSetController implements Initializable {
         bindDisableProperty(isDisableOrNotSelected(trackNumberCollectiveSetCheck), trackNumberAscRadio, trackNumberDesRadio);
         bindDisableProperty(isDisableOrNotSelected(albumArtistCollectiveSetCheck), albumArtistCollectiveSet, albumArtistCandidatesBox);
         bindDisableProperty(isDisableOrNotSelected(albumCollectiveSetCheck), albumCollectiveSet, albumCandidatesBox);
-        bindDisableProperty(filesProperty.valueProperty().isNull(),
+        bindDisableProperty(fileListProperty.isNull().or(fileListProperty.emptyProperty()),
                 trackExcerptCheck, artistCollectiveSetCheck, trackNumberCollectiveSetCheck,
                 albumArtistCollectiveSetCheck, albumCollectiveSetCheck);
-        bindDisableProperty(filesProperty.valueProperty().isNull()
+        bindDisableProperty(fileListProperty.isNull().or(fileListProperty.emptyProperty())
                         .or(((trackExcerptCheck.selectedProperty()
                                 .or(artistCollectiveSetCheck.selectedProperty())
                                 .or(trackNumberCollectiveSetCheck.selectedProperty())
                                 .or(albumArtistCollectiveSetCheck.selectedProperty())
                                 .or(albumCollectiveSetCheck.selectedProperty())).not())),
                 collectiveSetButton);
-        fileProperty.valueProperty().addListener(((observableValue, oldFile, newFile) -> excerptTrackNumber()));
-        trackExcerptBefore.textProperty().addListener((observableValue, oldValue, newValue) -> excerptTrackNumber());
-        trackExcerptAfter.textProperty().addListener((observableValue, oldValue, newValue) -> excerptTrackNumber());
-        filesProperty.valueProperty().addListener(((observableValue, oldFiles, newFiles) -> updateCandidates(newFiles)));
+        trackExcerptBefore.textProperty().addListener((observableValue, oldValue, newValue) -> excerptTrackName());
+        trackExcerptAfter.textProperty().addListener((observableValue, oldValue, newValue) -> excerptTrackName());
 
         ToggleGroup group = new ToggleGroup();
         trackNumberAscRadio.setToggleGroup(group);
         trackNumberDesRadio.setToggleGroup(group);
 
-        listenFileUpdateUseCase.startToListen(new ListenFileUpdateUseCase.Callback() {
-            @Override
-            public void onSuccess(MP3FileDto file) {
-                updateMP3File(file);
-            }
+        selectedFileProperty.addListener((observableValue, oldValue, newValue) -> updateMP3File(newValue));
+        fileListProperty.addListener((observableValue, oldValue, newValue) -> updateMP3Files(newValue));
 
-            @Override
-            public void onFailure() {
-
-            }
-        });
-        listenFilesUpdateUseCase.startToListen(new ListenFilesUpdateUseCase.Callback() {
-            @Override
-            public void onSuccess(List<MP3FileDto> file) {
-                updateMP3Files(file);
-            }
-
-            @Override
-            public void onFailure() {
-
-            }
-        });
+        collectiveSetButton.setOnMouseClicked(mouseEvent -> submitTrackInfo());
     }
 
-    public void updateMP3Files(List<MP3FileDto> fileDtos) {
-        filesProperty.set(fileDtos);
-        analyzeCandidates(fileDtos);
+    private void updateMP3Files(List<MP3FileDto> files) {
+        analyzeAndUpdateCandidates(files);
     }
 
-    public void updateMP3File(MP3FileDto fileDto) {
-        fileProperty.set(fileDto);
+    private void updateMP3File(MP3FileDto file) {
+        String result = excerptTrackName(file);
+        trackExcerptExample.setText(result);
     }
 
-    public void clearMP3Files() {
-        filesProperty.set(null);
-        clearCandidates();
+    private void excerptTrackName() {
+        MP3FileDto file = selectedFileProperty.get();
+        String result = excerptTrackName(file);
+        trackExcerptExample.setText(result);
     }
 
-    public void clearMP3File() {
-        fileProperty.set(null);
-    }
-
-    private void excerptTrackNumber() {
-        MP3FileDto file = fileProperty.get();
+    private String excerptTrackName(MP3FileDto file) {
         if (null == file) {
-            trackExcerptExample.setText("");
-            return;
+            return "";
         }
         String originalStr = file.fileName;
         String before = trackExcerptBefore.getText();
         String after = trackExcerptAfter.getText();
-        String result = excerpt(originalStr, before, after);
-        trackExcerptExample.setText(result);
+        return collectiveSetUseCase.excerptAffix(originalStr, before, after);
     }
 
-    private String excerpt(String original, String before, String after) {
-        if (isNullOrEmpty(original)) return "";
-        String output = original;
-        int beforeIndex = (isNullOrEmpty(output) || isNullOrEmpty(before)) ? -1 : original.indexOf(before);
-        if (beforeIndex != -1) {
-            output = output.substring(beforeIndex + 1);
+    private void analyzeAndUpdateCandidates(List<MP3FileDto> files) {
+        analyzeAndUpdateCandidates(files, fileDto -> fileDto.artistName, artistCandidates, artistCollectiveSet);
+        analyzeAndUpdateCandidates(files, fileDto -> fileDto.albumArtistName, albumArtistCandidates, albumArtistCollectiveSet);
+        analyzeAndUpdateCandidates(files, fileDto -> fileDto.albumName, albumCandidates, albumCollectiveSet);
+    }
+
+    private void analyzeAndUpdateCandidates(List<MP3FileDto> files, Function<MP3FileDto, String> command, HBox container, TextField destination) {
+        Map<String, Integer> map = new HashMap<>();
+        container.getChildren().clear();
+
+        if (null == files) return;
+
+        for (MP3FileDto file : files) {
+            String key = command.apply(file);
+            if (null == key) continue;
+            map.put(key, map.getOrDefault(key, 0) + 1);
         }
-        int afterIndex = (isNullOrEmpty(output) || isNullOrEmpty(after)) ? -1 : output.lastIndexOf(after);
-        if (afterIndex != -1) {
-            output = output.substring(0, afterIndex);
-        }
-        return output;
-    }
 
-    private void updateCandidates(List<MP3FileDto> fileDtos) {
-        clearCandidates();
-        if (null == fileDtos) return;
-        analyzeCandidates(fileDtos);
-    }
-
-    private void analyzeCandidates(List<MP3FileDto> fileDtos) {
-        clearCandidates();
-        for (MP3FileDto dto : fileDtos) {
-            addOrCountUp(artistCandidateList, dto.artistName);
-            addOrCountUp(albumArtistCandidateList, dto.albumArtistName);
-            addOrCountUp(albumCandidateList, dto.albumName);
-        }
-        setCandidates(artistCandidates, artistCandidateList, artistCollectiveSet);
-        setCandidates(albumArtistCandidates, albumArtistCandidateList, albumArtistCollectiveSet);
-        setCandidates(albumCandidates, albumCandidateList, albumCollectiveSet);
-    }
-
-    private void clearCandidates() {
-        artistCandidateList.clear();
-        artistCandidates.getChildren().clear();
-        albumArtistCandidateList.clear();
-        albumArtistCandidates.getChildren().clear();
-        albumCandidateList.clear();
-        albumCandidates.getChildren().clear();
-    }
-
-    private void addOrCountUp(Map<String, Integer> map, String key) {
-        if (isNullOrEmpty(key)) return;
-        map.put(key, map.getOrDefault(key, 0) + 1);
-    }
-
-    private boolean isNullOrEmpty(String input) {
-        return (null == input) || input.equals("");
-    }
-
-    private void setCandidates(HBox list, Map<String, Integer> map, TextField output) {
         if (map.size() == 0) {
             Label text = new Label();
             text.setText("候補なし");
-            list.getChildren().add(text);
+            container.getChildren().add(text);
         } else {
             map.entrySet().stream()
                     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
@@ -219,20 +150,32 @@ public class CollectiveSetController implements Initializable {
                         text.setText(key);
                         text.setFont(Font.font(10));
                         text.setUnderline(true);
-                        text.setOnMouseClicked(mouseEvent -> output.setText(key));
-                        list.getChildren().add(text);
+                        text.setOnMouseClicked(mouseEvent -> destination.setText(key));
+                        container.getChildren().add(text);
                     });
         }
     }
 
-    private ObservableValue<Boolean> isDisableOrNotSelected(CheckBox checkBox) {
-        return checkBox.disableProperty()
-                .or(checkBox.selectedProperty().not());
-    }
+    private void submitTrackInfo() {
+        boolean trackNameEnabled = trackExcerptCheck.selectedProperty().get();
+        String trackNameBefore = trackExcerptBefore.getText();
+        String trackNameAfter = trackExcerptAfter.getText();
+        CollectiveSetUseCase.Parametor.TrackName trackNameParam = new CollectiveSetUseCase.Parametor.TrackName(trackNameEnabled, trackNameBefore, trackNameAfter);
+        boolean artistNameEnabled = artistCollectiveSetCheck.selectedProperty().get();
+        String artistName = artistCollectiveSet.getText();
+        CollectiveSetUseCase.Parametor.Name artistNameParam = new CollectiveSetUseCase.Parametor.Name(artistNameEnabled, artistName);
+        boolean trackNumberEnabled = trackNumberCollectiveSetCheck.selectedProperty().get();
+        CollectiveSetUseCase.Parametor.TrackNumber.Order order = (trackNumberAscRadio.selectedProperty().get()) ? CollectiveSetUseCase.Parametor.TrackNumber.Order.ASC : CollectiveSetUseCase.Parametor.TrackNumber.Order.DESC;
+        CollectiveSetUseCase.Parametor.TrackNumber trackNumberParam = new CollectiveSetUseCase.Parametor.TrackNumber(trackNumberEnabled, order);
+        boolean albumArtistNameEnabled = albumArtistCollectiveSetCheck.selectedProperty().get();
+        String albumArtistName = albumArtistCollectiveSet.getText();
+        CollectiveSetUseCase.Parametor.Name albumArtistNameParam = new CollectiveSetUseCase.Parametor.Name(albumArtistNameEnabled, albumArtistName);
+        boolean albumNameEnabled = albumCollectiveSetCheck.selectedProperty().get();
+        String albumName = albumCollectiveSet.getText();
+        CollectiveSetUseCase.Parametor.Name albumNameParam = new CollectiveSetUseCase.Parametor.Name(albumNameEnabled, albumName);
 
-    private void bindDisableProperty(ObservableValue<Boolean> value, Node... nodes) {
-        for (Node node : nodes) {
-            node.disableProperty().bind(value);
-        }
+        List<MP3FileDto> files = fileListProperty.get();
+        CollectiveSetUseCase.Parametor parameter = new CollectiveSetUseCase.Parametor(trackNameParam, artistNameParam, trackNumberParam, albumArtistNameParam, albumNameParam);
+        collectiveSetUseCase.updateTags(files, parameter);
     }
 }

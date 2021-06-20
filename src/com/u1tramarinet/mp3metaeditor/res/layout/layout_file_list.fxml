@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.u1tramarinet.mp3metaeditor.java.ui.FileListController"
+            hbarPolicy="NEVER" prefHeight="460.0" prefWidth="232.0" BorderPane.alignment="CENTER">
+    <content>
+        <ListView fx:id="fileListView" maxHeight="1.7976931348623157E308" minHeight="-Infinity"
+                  prefWidth="230.0"/>
+    </content>
+</ScrollPane>

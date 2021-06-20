@@ -3,46 +3,39 @@ package com.u1tramarinet.mp3metaeditor.java.usecase;
 import com.u1tramarinet.mp3metaeditor.java.domain.MP3File;
 import com.u1tramarinet.mp3metaeditor.java.domain.MP3FileManager;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
 public class ListenFilesUpdateUseCase extends ListenUseCase<List<MP3FileDto>> {
     private MP3FileManager.Callback<List<MP3File>> callback;
-    private final Executor callbackExecutor;
 
     public ListenFilesUpdateUseCase() {
-        this(null);
+        super();
     }
 
     public ListenFilesUpdateUseCase(Executor callbackExecutor) {
-        super();
-        this.callbackExecutor = callbackExecutor;
+        super(callbackExecutor);
     }
 
     @Override
-    public void startToListen(Callback<List<MP3FileDto>> callback) {
+    public void startToListenLocked(Callback<List<MP3FileDto>> callback) {
         this.callback = new MP3FileManager.Callback<>() {
             @Override
             public void onUpdateCompleted(List<MP3File> data) {
-                if (Objects.nonNull(callbackExecutor)) {
-                    callbackExecutor.execute(() -> notifyOnSuccess(data, callback));
-                } else {
-                    notifyOnSuccess(data, callback);
-                }
+                runOnExecutorIfNeeded(() -> notifyOnSuccess(data, callback));
             }
 
             @Override
             public void onUpdateFailed(Exception e) {
-                notifyOnFailure(callback);
+                runOnExecutorIfNeeded(() -> notifyOnFailure(callback));
             }
         };
         manager.addFilesCallback(this.callback);
     }
 
     @Override
-    public void finishToListen() {
+    public void finishToListenLocked() {
         manager.removeFilesCallback(callback);
     }
 

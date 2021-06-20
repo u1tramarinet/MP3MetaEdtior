@@ -8,43 +8,33 @@ import java.util.concurrent.Executor;
 
 public class ListenFileUpdateUseCase extends ListenUseCase<MP3FileDto> {
     private MP3FileManager.Callback<MP3File> callback;
-    private final Executor callbackExecutor;
 
     public ListenFileUpdateUseCase() {
-        this(null);
+        super();
     }
 
     public ListenFileUpdateUseCase(Executor callbackExecutor) {
-        super();
-        this.callbackExecutor = callbackExecutor;
+        super(callbackExecutor);
     }
 
     @Override
-    public void startToListen(Callback<MP3FileDto> callback) {
+    public void startToListenLocked(Callback<MP3FileDto> callback) {
         this.callback = new MP3FileManager.Callback<>() {
             @Override
             public void onUpdateCompleted(MP3File data) {
-                if (Objects.nonNull(callbackExecutor)) {
-                    callbackExecutor.execute(() -> notifyOnSuccess(data, callback));
-                } else {
-                    notifyOnSuccess(data, callback);
-                }
+                runOnExecutorIfNeeded(() -> notifyOnSuccess(data, callback));
             }
 
             @Override
             public void onUpdateFailed(Exception e) {
-                if (Objects.nonNull(callbackExecutor)) {
-                    callbackExecutor.execute(() -> notifyOnFailure(callback));
-                } else {
-                    notifyOnFailure(callback);
-                }
+                runOnExecutorIfNeeded(() -> notifyOnFailure(callback));
             }
         };
         manager.addFileCallback(this.callback);
     }
 
     @Override
-    public void finishToListen() {
+    public void finishToListenLocked() {
         manager.removeFileCallback(this.callback);
     }
 

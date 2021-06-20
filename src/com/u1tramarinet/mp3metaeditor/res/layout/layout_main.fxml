@@ -26,11 +26,11 @@
                 <TabPane maxWidth="1.7976931348623157E308" minWidth="-Infinity">
                     <tabs>
                         <Tab closable="false" text="単曲設定">
-                            <fx:include fx:id="unitSet" source="layout_unit_set.fxml"/>
+                            <fx:include fx:id="unitSetting" source="layout_unit_set.fxml"/>
                         </Tab>
 
                         <Tab closable="false" text="一括設定">
-                            <fx:include fx:id="collectiveSet" source="layout_collective_set.fxml"/>
+                            <fx:include fx:id="collectiveSetting" source="layout_collective_set.fxml"/>
                         </Tab>
                     </tabs>
                 </TabPane>
@@ -41,11 +41,6 @@
         </ScrollPane>
     </center>
     <left>
-        <ScrollPane hbarPolicy="NEVER" prefHeight="460.0" prefWidth="232.0" BorderPane.alignment="CENTER">
-            <content>
-                <ListView fx:id="fileListView" maxHeight="1.7976931348623157E308" minHeight="-Infinity"
-                          prefWidth="230.0"/>
-            </content>
-        </ScrollPane>
+        <fx:include fx:id="fileList" source="layout_file_list.fxml" prefHeight="460.0" prefWidth="232.0"/>
     </left>
 </BorderPane>

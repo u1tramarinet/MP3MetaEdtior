@@ -4,105 +4,88 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.u1tramarinet.mp3metaeditor.java.ui.CollectiveSetController">
+<VBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.u1tramarinet.mp3metaeditor.java.ui.CollectiveSetController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <children>
         <GridPane hgap="20.0" vgap="5.0">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <CheckBox fx:id="trackExcerptCheck" mnemonicParsing="false" selected="true" text="ファイル名から曲名を抜粋する"/>
-                <CheckBox fx:id="artistCollectiveSetCheck" mnemonicParsing="false" selected="true" text="アーティストを一括設定する"
-                          GridPane.rowIndex="2"/>
-                <CheckBox fx:id="trackNumberCollectiveSetCheck" mnemonicParsing="false" selected="true"
-                          text="トラック番号を一括設定する" GridPane.rowIndex="4"/>
-                <CheckBox fx:id="albumArtistCollectiveSetCheck" mnemonicParsing="false" selected="true"
-                          text="アルバムアーティストを一括設定する" GridPane.rowIndex="5"/>
-                <CheckBox fx:id="albumCollectiveSetCheck" mnemonicParsing="false" selected="true" text="アルバムを一括設定する"
-                          GridPane.rowIndex="7"/>
+                <CheckBox fx:id="trackExcerptCheck" mnemonicParsing="false" selected="true" text="ファイル名から曲名を抜粋する" />
+                <CheckBox fx:id="artistCollectiveSetCheck" mnemonicParsing="false" selected="true" text="アーティストを一括設定する" GridPane.rowIndex="2" />
+                <CheckBox fx:id="trackNumberCollectiveSetCheck" mnemonicParsing="false" selected="true" text="トラック番号を一括設定する" GridPane.rowIndex="4" />
+                <CheckBox fx:id="albumArtistCollectiveSetCheck" mnemonicParsing="false" selected="true" text="アルバムアーティストを一括設定する" GridPane.rowIndex="5" />
+                <CheckBox fx:id="albumCollectiveSetCheck" mnemonicParsing="false" selected="true" text="アルバムを一括設定する" GridPane.rowIndex="7" />
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="1">
                     <children>
-                        <TextField fx:id="trackExcerptBefore" prefColumnCount="3" HBox.hgrow="NEVER"/>
-                        <Label fx:id="trackExcerptBeforeLabel" text="より後"/>
-                        <TextField fx:id="trackExcerptAfter" prefColumnCount="3"/>
-                        <Label fx:id="trackExcerptAfterLabel" text="より前の文字"/>
+                        <TextField fx:id="trackExcerptBefore" prefColumnCount="3" HBox.hgrow="NEVER" />
+                        <Label fx:id="trackExcerptBeforeLabel" text="より後" />
+                        <TextField fx:id="trackExcerptAfter" prefColumnCount="3" />
+                        <Label fx:id="trackExcerptAfterLabel" text="より前の文字" />
                     </children>
                 </HBox>
-                <TextField fx:id="artistCollectiveSet" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <TextField fx:id="albumArtistCollectiveSet" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                <TextField fx:id="albumCollectiveSet" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-                <HBox fx:id="trackExcerptBox" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="10.0"
-                      GridPane.columnSpan="2" GridPane.rowIndex="1">
+                <TextField fx:id="artistCollectiveSet" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="albumArtistCollectiveSet" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <TextField fx:id="albumCollectiveSet" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <HBox fx:id="trackExcerptBox" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="10.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
                     <children>
-                        <Label text="例: "/>
-                        <Label fx:id="trackExcerptExample" maxWidth="1.7976931348623157E308" minWidth="-Infinity"
-                               prefWidth="180.0" wrapText="true"/>
+                        <Label text="例: " />
+                        <Label fx:id="trackExcerptExample" maxWidth="1.7976931348623157E308" minWidth="-Infinity" wrapText="true" />
                     </children>
                     <padding>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </padding>
                 </HBox>
-                <HBox fx:id="artistCandidatesBox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0"
-                      GridPane.columnSpan="2" GridPane.rowIndex="3">
+                <HBox fx:id="artistCandidatesBox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
                     <padding>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </padding>
                     <children>
-                        <Label text="候補: "/>
-                        <HBox fx:id="artistCandidates" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308"
-                              prefHeight="100.0" prefWidth="200.0"/>
+                        <Label text="候補: " />
+                        <HBox fx:id="artistCandidates" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" />
                     </children>
                 </HBox>
-                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="20.0"
-                      GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <children>
-                        <RadioButton fx:id="trackNumberAscRadio" mnemonicParsing="false" selected="true" text="昇順"/>
-                        <RadioButton fx:id="trackNumberDesRadio" mnemonicParsing="false" text="降順"/>
+                        <RadioButton fx:id="trackNumberAscRadio" mnemonicParsing="false" selected="true" text="昇順" />
+                        <RadioButton fx:id="trackNumberDesRadio" mnemonicParsing="false" text="降順" />
                     </children>
                 </HBox>
-                <HBox fx:id="albumArtistCandidatesBox" alignment="CENTER_LEFT" layoutX="10.0" layoutY="115.0"
-                      prefHeight="100.0" prefWidth="200.0"
-                      GridPane.columnSpan="2" GridPane.rowIndex="6">
+                <HBox fx:id="albumArtistCandidatesBox" alignment="CENTER_LEFT" layoutX="10.0" layoutY="115.0" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6">
                     <padding>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </padding>
                     <children>
-                        <Label text="候補: "/>
-                        <HBox fx:id="albumArtistCandidates" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308"
-                              prefHeight="100.0" prefWidth="200.0"/>
+                        <Label text="候補: " />
+                        <HBox fx:id="albumArtistCandidates" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" />
                     </children>
                 </HBox>
-                <HBox fx:id="albumCandidatesBox" alignment="CENTER_LEFT" layoutX="10.0" layoutY="220.0"
-                      prefHeight="100.0" prefWidth="200.0"
-                      GridPane.columnSpan="2" GridPane.rowIndex="8">
+                <HBox fx:id="albumCandidatesBox" alignment="CENTER_LEFT" layoutX="10.0" layoutY="220.0" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="8">
                     <padding>
-                        <Insets left="20.0"/>
+                        <Insets left="20.0" />
                     </padding>
                     <children>
-                        <Label text="候補: "/>
-                        <HBox fx:id="albumCandidates" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308"
-                              prefHeight="100.0" prefWidth="200.0"/>
+                        <Label text="候補: " />
+                        <HBox fx:id="albumCandidates" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" />
                     </children>
                 </HBox>
             </children>
         </GridPane>
-        <Button fx:id="collectiveSetButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                text="設定"/>
+        <Button fx:id="collectiveSetButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="設定" />
     </children>
 </VBox>
